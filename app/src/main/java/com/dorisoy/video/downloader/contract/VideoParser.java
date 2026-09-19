@@ -1,0 +1,102 @@
+package com.dorisoy.video.downloader.contract;
+
+import android.content.Context;
+import android.util.Log;
+
+import com.dorisoy.video.downloader.R;
+import com.dorisoy.video.downloader.bean.Video;
+import com.dorisoy.video.downloader.core.contract.AbstractSingleton;
+import com.dorisoy.video.downloader.core.exception.HttpException;
+import com.dorisoy.video.downloader.exception.VideoException;
+import com.dorisoy.video.downloader.util.Helpers;
+
+import org.apache.commons.lang3.tuple.MutablePair;
+import org.apache.commons.lang3.tuple.Pair;
+
+import java.io.IOException;
+import java.util.Objects;
+
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+
+abstract public class VideoParser extends AbstractSingleton {
+    private static final String TAG = VideoParser.class.getSimpleName();
+
+    protected Context context;
+
+    public VideoParser(Context context) throws SingletonException {
+        super();
+        this.context = context;
+    }
+
+    protected String getString(int resID)
+    {
+        return this.context.getString(resID);
+    }
+
+    protected String getString(int resID, Object ...formatArgs)
+    {
+        return this.context.getString(resID, formatArgs);
+    }
+
+    protected Pair<String, String> httpGet(String url, boolean usePhoneUa)
+    {
+        try {
+            Request request = new Request.Builder()
+                    .header("User-Agent", usePhoneUa ? Helpers.getPhoneUa() : Helpers.getPcUa())
+                    .url(url)
+                    .build();
+
+            Response response = new OkHttpClient().newCall(request).execute();
+            String finalUrl = response.request().url().toString();
+            String html = "";
+
+            if (response.body() != null) {
+                html = response.body().string();
+                response.body().close();
+            }
+
+            if (html.isEmpty())
+                throw new HttpException(this.getString(R.string.exception_http));
+
+            return new MutablePair<>(finalUrl, html);
+        } catch (IOException | NullPointerException e)
+        {
+            Log.e(TAG, e.getMessage(), e);
+        }
+
+        throw new HttpException(this.getString(R.string.exception_http));
+    }
+
+    protected String redirectUrl(String url, boolean usePhoneUa) {
+        try {
+            Request request = new Request.Builder()
+                    .header("User-Agent", usePhoneUa ? Helpers.getPhoneUa() : Helpers.getPcUa())
+                    .url(url)
+                    .build();
+
+            Response response = new OkHttpClient().newCall(request).execute();
+            if (response.body() != null) {
+               response.body().close();
+            }
+            return response.request().url().toString();
+        } catch (IOException | NullPointerException e)
+        {
+            Log.e(TAG, e.getMessage(), e);
+        }
+        return url;
+    }
+
+    /**
+     * 校验远端返回体确实是 JSON，避免把 HTML 错误页直接交给 Jackson 抛出难以理解的原始异常。
+     */
+    protected String ensureJson(String body) throws VideoException {
+        String json = body == null ? "" : body.trim();
+        if (json.isEmpty() || (json.charAt(0) != '{' && json.charAt(0) != '['))
+            throw new VideoException(this.getString(R.string.exception_not_json));
+        return json;
+    }
+
+    abstract public Video get(String str) throws Throwable;
+}

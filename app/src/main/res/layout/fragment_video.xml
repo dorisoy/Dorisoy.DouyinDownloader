@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#000000"
-    tools:context="com.fly.video.downloader.layout.fragment.VideoFragment"
+    tools:context="com.dorisoy.video.downloader.layout.fragment.VideoFragment"
     android:id="@+id/video_fragment">
 
     <RelativeLayout
@@ -74,7 +74,7 @@
             android:layout_marginBottom="10dp"
             android:orientation="vertical">
 
-            <com.fly.iconify.widget.IconTextView
+            <com.dorisoy.iconify.widget.IconTextView
                 android:layout_width="match_parent"
                 android:layout_height="32dp"
                 android:shadowColor="#22000000"
@@ -95,7 +95,7 @@
                 />
         </LinearLayout>
 
-        <com.fly.iconify.widget.IconTextView
+        <com.dorisoy.iconify.widget.IconTextView
             android:id="@+id/video_pause"
             android:layout_width="60dp"
             android:layout_height="60dp"
@@ -103,7 +103,7 @@
             android:text="{fa-play 60dp}"
             android:textColor="#80FFFFFF" />
 
-        <com.fly.iconify.widget.IconTextView
+        <com.dorisoy.iconify.widget.IconTextView
             android:id="@+id/video_close"
             android:layout_width="40dp"
             android:layout_height="40dp"

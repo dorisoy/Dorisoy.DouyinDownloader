@@ -3,7 +3,7 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 33
     defaultConfig {
-        applicationId "com.fly.video.downloader"
+        applicationId "com.dorisoy.video.downloader"
         minSdkVersion 19
         targetSdkVersion 33
         versionCode 1
@@ -68,6 +68,6 @@ android {
         //Ask perm
         implementation 'pub.devrel:easypermissions:2.0.1'
     }
-    namespace 'com.fly.video.downloader'
+    namespace 'com.dorisoy.video.downloader'
 }
 
